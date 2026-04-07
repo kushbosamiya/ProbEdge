@@ -11,7 +11,7 @@
 
 Unlike AMM-based DEXs, which rely on liquidity pools and incur gas costs per trade, OrderbookTrade-Yellow enables **zero-gas trading sessions** with **on-chain settlement only at session closure**.  
 
-### 🔑 Key Innovation
+###  Key Innovation
 - **Single deposit → unlimited trades**  
 - **Zero gas fees** during trading sessions  
 - **Sub-second latency** via ClearNode WebSocket execution  
@@ -48,21 +48,21 @@ This hybrid design combines the **speed of centralized exchanges** with the **se
 
 
 
-\[
+$$\[
 x \cdot y = k
-\]
+\]$$
 
 
 
-where \(x\) and \(y\) are token reserves, and \(k\) is invariant.  
+where $$\(x\)$$ and $$\(y\)$$ are token reserves, and $$\(k\)$$ is invariant.  
 
 **CLOB Pricing (Price-Time Priority):**
 
 
 
-\[
+$$\[
 P_{trade} = \min(P_{ask}, P_{bid})
-\]
+\]$$
 
 
 
@@ -70,13 +70,13 @@ Execution priority is determined by **earliest timestamp**:
 
 
 
-\[
+$$\[
 Priority(order) = f(price, time)
-\]
+\]$$
 
 
 
-with \(f\) enforcing **best price first, earliest order second**.
+with $$\(f\)$$ enforcing **best price first, earliest order second**.
 
 ---
 
@@ -113,4 +113,4 @@ sequenceDiagram
   BE->>BE: ValidateToken() and create session
   BE-->>FE: yellow_auth_success
 
-  FE-->>User: ✅ Authenticated — can start trading
+  FE-->>User:  Authenticated — can start trading
