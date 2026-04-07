@@ -23,7 +23,8 @@ This hybrid design combines the **speed of centralized exchanges** with the **se
 
 ## 2. Architecture
 
-![Architecture](assets/architecture.png)
+<img width="3524" height="5694" alt="image" src="https://github.com/user-attachments/assets/0eacea40-db7a-4208-a0c4-5ef3ad7e7a72" />
+
 
 ### Components
 - **Frontend (Next.js + React)**: Wallet connection, session management, and trading UI.  
