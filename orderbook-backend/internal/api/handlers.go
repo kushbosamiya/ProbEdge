@@ -43,9 +43,11 @@ func MarketsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type CreateMarketRequest struct {
-	Name  string `json:"name"`
-	Base  string `json:"base"`
-	Quote string `json:"quote"`
+	Name        string `json:"name"`
+	Base        string `json:"base"`
+	Quote       string `json:"quote"`
+	Description string `json:"description"`
+	Expiry      string `json:"expiry"`
 }
 
 type CreateMarketResponse struct {
@@ -65,7 +67,21 @@ func CreateMarketHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.Name == "" || req.Base == "" || req.Quote == "" {
+	if req.Name == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "missing required fields"})
+		return
+	}
+
+	base := req.Base
+	quote := req.Quote
+	if base == "" || quote == "" {
+		// Accept "BTC/USDC" or "BTC-USDC" and infer base/quote.
+		if b, q, ok := splitPair(req.Name); ok {
+			base, quote = b, q
+		}
+	}
+	if base == "" || quote == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{"error": "missing required fields"})
 		return
@@ -74,21 +90,74 @@ func CreateMarketHandler(w http.ResponseWriter, r *http.Request) {
 	marketsMu.Lock()
 	defer marketsMu.Unlock()
 
-	if _, exists := markets[req.Name]; exists {
+	id := req.Name
+	if b, q, ok := splitPair(req.Name); ok {
+		// Make the market ID URL-safe for routing: "BTC/USDC" -> "BTC-USDC".
+		id = b + "-" + q
+	}
+
+	if _, exists := markets[id]; exists {
 		w.WriteHeader(http.StatusConflict)
 		json.NewEncoder(w).Encode(map[string]string{"error": "market already exists"})
 		return
 	}
 
 	m := Market{
-		ID:    req.Name,
+		ID:    id,
 		Name:  req.Name,
-		Base:  req.Base,
-		Quote: req.Quote,
+		Base:  base,
+		Quote: quote,
 	}
-	markets[req.Name] = m
+	markets[id] = m
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(CreateMarketResponse{Market: m})
+}
+
+func MarketByIDHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Path shape: /markets/{id}
+	const prefix = "/markets/"
+	if len(r.URL.Path) <= len(prefix) {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	id := r.URL.Path[len(prefix):]
+	if id == "" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	marketsMu.RLock()
+	m, ok := markets[id]
+	marketsMu.RUnlock()
+	if !ok {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(map[string]string{"error": "not found"})
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(m)
+}
+
+func splitPair(name string) (string, string, bool) {
+	for _, sep := range []string{"/", "-"} {
+		for i := 0; i < len(name); i++ {
+			if name[i:i+1] == sep {
+				base := name[:i]
+				quote := name[i+1:]
+				if base != "" && quote != "" {
+					return base, quote, true
+				}
+				return "", "", false
+			}
+		}
+	}
+	return "", "", false
 }

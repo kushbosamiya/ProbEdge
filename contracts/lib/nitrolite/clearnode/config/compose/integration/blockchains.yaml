@@ -1,0 +1,6 @@
+default_contract_address:
+
+blockchains:
+- name: anvil
+  id: 31337
+  contract_address: ""

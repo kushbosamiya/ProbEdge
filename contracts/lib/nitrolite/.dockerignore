@@ -1,0 +1,21 @@
+.dockerignore
+.gitignore
+.gitmodules
+docker-compose.yml
+.git/
+.github/
+LICENSE
+contracts/
+docs/
+sdk/ts/
+test/
+
+*.md
+
+# clearnode
+clearnode/Dockerfile
+clearnode/.gitignore
+clearnode/docs/
+clearnode/chart/
+clearnode/scripts/
+clearnode/docker-compose.yml

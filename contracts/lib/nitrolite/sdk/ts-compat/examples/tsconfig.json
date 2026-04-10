@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "strict": true,
+        "paths": {
+            "@yellow-org/sdk": ["../../ts/src/index.ts"],
+            "@yellow-org/sdk-compat": ["../src/index.ts"]
+        }
+    },
+    "include": ["./*.ts"]
+}

@@ -9,13 +9,18 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/kushbosamiya/orderbooktrade-yellow/internal/api"
 )
 
 func main() {
 	port := getEnv("PORT", "8080")
-	
+
 	mux := http.NewServeMux()
-	mux.HandleFunc("/health", healthHandler)
+	mux.HandleFunc("/health", api.HealthHandler)
+	mux.HandleFunc("/markets", api.MarketsHandler)
+	mux.HandleFunc("/markets/", api.MarketByIDHandler)
+	mux.HandleFunc("/market", api.CreateMarketHandler)
 	mux.HandleFunc("/", rootHandler)
 
 	server := &http.Server{
@@ -53,11 +58,6 @@ func getEnv(key, defaultValue string) string {
 		return value
 	}
 	return defaultValue
-}
-
-func healthHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("OK"))
 }
 
 func rootHandler(w http.ResponseWriter, r *http.Request) {
