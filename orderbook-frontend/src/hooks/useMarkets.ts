@@ -1,7 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import type { Market } from "../types/orderbook";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+function getApiUrl() {
+  return process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+}
 
 interface BackendMarket {
   id: string;
@@ -29,6 +31,7 @@ export function useMarkets() {
   const { data, isLoading, error, refetch } = useQuery<Market[]>({
     queryKey: ["markets"],
     queryFn: async () => {
+      const API_URL = getApiUrl();
       const res = await fetch(`${API_URL}/markets`);
       if (!res.ok) {
         throw new Error(`Failed to fetch markets: ${res.status}`);
@@ -41,7 +44,7 @@ export function useMarkets() {
   return {
     markets: data ?? [],
     isLoading,
-    error: error ? error.message : null,
+    error: error ? (error as Error).message : null,
     refetch,
   };
 }

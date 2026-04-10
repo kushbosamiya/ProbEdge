@@ -1,22 +1,47 @@
 import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { MarketsPage } from "../page";
 
-vi.mock("../useMarkets", () => ({
+vi.mock("../../../hooks/useMarkets", () => ({
   useMarkets: vi.fn(),
 }));
 
-import { useMarkets } from "../useMarkets";
+vi.mock("../../../components/YellowAuthButton", () => ({
+  YellowAuthButton: () => <div data-testid="yellow-auth-button" />,
+}));
+
+vi.mock("next/link", () => ({
+  default: ({ href, children }: { href: string; children: React.ReactNode }) => (
+    <a href={href}>{children}</a>
+  ),
+}));
+
+import { useMarkets } from "../../../hooks/useMarkets";
 
 describe("markets page", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("TestMarketsPage_ShowsMarketCards", async () => {
+  it("TestMarketsPage_ShowsMarketCards", () => {
     const mockMarkets = [
-      { id: "BTC-USD", name: "BTC-USD", description: "Bitcoin", expiry: "2026-12-31", midPrice: 50000, volume: 1000000 },
-      { id: "ETH-USD", name: "ETH-USD", description: "Ethereum", expiry: "2026-12-31", midPrice: 3000, volume: 500000 },
+      {
+        id: "BTC-USD",
+        name: "BTC-USD",
+        description: "Bitcoin",
+        expiry: "2026-12-31",
+        midPrice: 50000,
+        volume: 1000000,
+      },
+      {
+        id: "ETH-USD",
+        name: "ETH-USD",
+        description: "Ethereum",
+        expiry: "2026-12-31",
+        midPrice: 3000,
+        volume: 500000,
+      },
     ];
 
     vi.mocked(useMarkets).mockReturnValue({
@@ -32,7 +57,7 @@ describe("markets page", () => {
     expect(screen.getByText("ETH-USD")).toBeInTheDocument();
   });
 
-  it("TestMarketsPage_ShowsSkeletonWhileLoading", async () => {
+  it("TestMarketsPage_ShowsSkeletonWhileLoading", () => {
     vi.mocked(useMarkets).mockReturnValue({
       markets: [],
       isLoading: true,
@@ -42,11 +67,11 @@ describe("markets page", () => {
 
     render(<MarketsPage />);
 
-    const skeletons = document.querySelectorAll(".animate-pulse");
-    expect(skeletons.length).toBeGreaterThan(0);
+    const skeletons = screen.getAllByTestId("market-skeleton");
+    expect(skeletons.length).toBe(3);
   });
 
-  it("TestMarketsPage_ShowsEmptyState", async () => {
+  it("TestMarketsPage_ShowsEmptyState", () => {
     vi.mocked(useMarkets).mockReturnValue({
       markets: [],
       isLoading: false,

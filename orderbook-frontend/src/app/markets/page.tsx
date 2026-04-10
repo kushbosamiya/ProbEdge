@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { useMarkets } from "../../hooks/useMarkets";
 import { PredictionMarketCard } from "../../components/PredictionMarketCard";
+import { YellowAuthButton } from "../../components/YellowAuthButton";
 
-export default function MarketsPage() {
+export function MarketsPage() {
   const { markets, isLoading, error, refetch } = useMarkets();
 
   if (isLoading) {
@@ -12,11 +13,13 @@ export default function MarketsPage() {
       <div className="min-h-screen p-8">
         <header className="mb-8 flex items-center justify-between">
           <h1 className="text-2xl font-bold">Markets</h1>
+          <YellowAuthButton />
         </header>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
+              data-testid="market-skeleton"
               className="animate-pulse rounded-lg border border-neutral-800 bg-neutral-950 p-4"
             >
               <div className="h-4 w-1/2 rounded bg-neutral-800" />
@@ -34,6 +37,7 @@ export default function MarketsPage() {
       <div className="min-h-screen p-8">
         <header className="mb-8 flex items-center justify-between">
           <h1 className="text-2xl font-bold">Markets</h1>
+          <YellowAuthButton />
         </header>
         <div className="flex flex-col items-center justify-center gap-4">
           <div className="text-red-400">Failed to load markets</div>
@@ -53,6 +57,7 @@ export default function MarketsPage() {
       <div className="min-h-screen p-8">
         <header className="mb-8 flex items-center justify-between">
           <h1 className="text-2xl font-bold">Markets</h1>
+          <YellowAuthButton />
         </header>
         <div className="flex flex-col items-center justify-center gap-4 pt-16">
           <div className="text-xl text-neutral-400">No markets yet</div>
@@ -68,6 +73,7 @@ export default function MarketsPage() {
     <div className="min-h-screen p-8">
       <header className="mb-8 flex items-center justify-between">
         <h1 className="text-2xl font-bold">Markets</h1>
+        <YellowAuthButton />
       </header>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {markets.map((market) => (
@@ -79,3 +85,5 @@ export default function MarketsPage() {
     </div>
   );
 }
+
+export default MarketsPage;
